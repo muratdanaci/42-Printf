@@ -6,25 +6,29 @@
 /*   By: mudanaci <mudanaci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 13:41:43 by mudanaci          #+#    #+#             */
-/*   Updated: 2023/02/17 17:37:54 by mudanaci         ###   ########.fr       */
+/*   Updated: 2023/03/07 15:26:44 by mudanaci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 
-# include <stdarg.h>
 # include <unistd.h>
-# include <stdlib.h>
+# include <stdarg.h>
 
-void		ft_putchar(char c, int *result);
-void		ft_putstr(char *s, int *result);
-void		ft_putnbr(int i, int *result);
-void		ft_unsigned(unsigned int i, int *result);
-void		ft_pointer(unsigned long long i, int *result);
-void		ft_dhex(unsigned int i, int *result);
-void		ft_uhex(unsigned int i, int *result);
-void		ft_check(va_list *list, char c, int *result);
-int			ft_printf(const char *s, ...);
+# ifndef LOWER_BASE
+#  define LOWER_BASE "0123456789abcdef"
+# endif
+
+# ifndef UPPER_BASE
+#  define UPPER_BASE "0123456789ABCDEF"
+# endif
+
+int	ft_printf(const char *str, ...);
+int	ft_control(char c, va_list va);
+int	ft_putchar(char c);
+int	ft_putstr(char *str);
+int	ft_putnbr(long double nbr, int base, int is_upper);
+int	ft_putptr(long double nbr, int base, int is_upper);
 
 #endif

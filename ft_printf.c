@@ -6,81 +6,54 @@
 /*   By: mudanaci <mudanaci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 13:38:02 by mudanaci          #+#    #+#             */
-/*   Updated: 2023/02/17 17:37:20 by mudanaci         ###   ########.fr       */
+/*   Updated: 2023/03/07 15:25:46 by mudanaci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-void	ft_dhex(unsigned int i, int *result)
+int	ft_control(char c, va_list va)
 {
-	char	*base;
+	int	sum;
 
-	base = "0123456789abcdef";
-	if (i >= 16)
-	{
-		ft_dhex(i / 16, result);
-		ft_dhex(i % 16, result);
-	}
-	else
-		ft_putchar(base[i], result);
-}
-
-void	ft_uhex(unsigned int i, int *result)
-{
-	char	*base;
-
-	base = "0123456789ABCDEF";
-	if (i >= 16)
-	{
-		ft_uhex(i / 16, result);
-		ft_uhex(i % 16, result);
-	}
-	else
-		ft_putchar(base[i], result);
-}
-
-void	ft_check(va_list *list, char c, int *result)
-{
+	sum = 0;
 	if (c == 'c')
-		ft_putchar(va_arg(*list, int), result);
-	else if (c == '%')
-		ft_putchar('%', result);
+		sum += ft_putchar(va_arg(va, int));
 	else if (c == 's')
-		ft_putstr(va_arg(*list, char *), result);
+		sum += ft_putstr(va_arg(va, char *));
 	else if (c == 'd' || c == 'i')
-		ft_putnbr(va_arg(*list, int), result);
-	else if (c == 'x')
-		ft_dhex(va_arg(*list, unsigned long long), result);
-	else if (c == 'X')
-		ft_uhex(va_arg(*list, unsigned long long), result);
+		sum += ft_putnbr(va_arg(va, int), 10, 0);
 	else if (c == 'u')
-		ft_unsigned(va_arg(*list, unsigned int), result);
+		sum += ft_putnbr(va_arg(va, unsigned int), 10, 0);
+	else if (c == 'x')
+		sum += ft_putnbr(va_arg(va, unsigned int), 16, 0);
+	else if (c == 'X')
+		sum += ft_putnbr(va_arg(va, unsigned int), 16, 1);
 	else if (c == 'p')
-	{
-		ft_putstr("0x", result);
-		ft_pointer(va_arg(*list, unsigned long long), result);
-	}
+		sum += ft_putptr(va_arg(va, unsigned long), 16, 0);
+	else
+		sum += ft_putchar(c);
+	return (sum);
 }
 
-int	ft_printf(const char *s, ...)
+int	ft_printf(const char *str, ...)
 {
-	int		i;
-	int		result;
-	va_list	list;
+	va_list	va;
+	int		sum;
 
-	i = 0;
-	result = 0;
-	va_start(list, s);
-
-	while (s[i] && s)
+	va_start(va, str);
+	sum = 0;
+	while (*str)
 	{
-		if (s[i] == '%' && s[i + 1])
-			ft_check(&list, s[++i], &result);
+		if (*str == '%')
+		{
+			sum += ft_control(*(str + 1), va);
+			str++;
+		}
 		else
-			ft_putchar(s[i], &result);
-		i++;
+			sum += ft_putchar(*str);
+		str++;
 	}
-	va_end (list);
-	return (result);
+	va_end(va);
+	return (sum);
 }

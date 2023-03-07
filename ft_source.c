@@ -6,78 +6,63 @@
 /*   By: mudanaci <mudanaci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:32:20 by mudanaci          #+#    #+#             */
-/*   Updated: 2023/02/17 17:09:09 by mudanaci         ###   ########.fr       */
+/*   Updated: 2023/03/07 15:24:59 by mudanaci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-void	ft_putchar(char c, int *result)
+int	ft_putchar(char c)
 {
 	write(1, &c, 1);
-	*result += 1;
+	return (1);
 }
 
-void	ft_putstr(char *s, int *result)
+int	ft_putstr(char *str)
 {
-	size_t	i;
+	int	sum;
 
-	i = 0;
-	if (!s)
+	sum = 0;
+	while (!str)
 	{
-		ft_putstr("(null)", result);
-		result += 6;
-		return ;
+		sum += write(1, "(null)", 6);
+		return (sum);
 	}
-	while (s[i])
+	while (*str)
 	{
-		ft_putchar(s[i], result);
-		i++;
+		write(1, str, 1);
+		str++;
+		sum++;
 	}
+	return (sum);
 }
 
-void	ft_putnbr(int i, int *result)
+int	ft_putnbr(long double nbr, int base, int is_upper)
 {
-	int	n;
+	int	sum;
 
-	n = 0;
-	if (i == -2147483648)
-		return (ft_putstr("-2147483648", result));
-	else if (i < 0)
+	sum = 1;
+	if (nbr < 0)
 	{
-		ft_putchar('-', result);
-		ft_putnbr(-i, result);
+		nbr = -nbr;
+		write(1, "-", 1);
+		sum++;
 	}
-	else if (i > 9)
-	{
-		ft_putnbr(i / 10, result);
-		ft_putchar(i % 10 + '0', result);
-	}
+	if (nbr >= base)
+		sum += ft_putnbr(((unsigned long)nbr / base), base, is_upper);
+	if (is_upper == 1)
+		write(1, &UPPER_BASE[(unsigned long)nbr % base], 1);
 	else
-		ft_putchar(i + '0', result);
+		write(1, &LOWER_BASE[(unsigned long)nbr % base], 1);
+	return (sum);
 }
 
-void	ft_unsigned(unsigned int i, int *result)
+int	ft_putptr(long double nbr, int base, int is_upper)
 {
-	if (i > 9)
-	{
-		ft_putnbr(i / 10, result);
-		ft_putnbr(i % 10, result);
-	}
-	else
-		ft_putchar(i + '0', result);
-}
+	int	sum;
 
-void	ft_pointer(unsigned long long i, int *result)
-{
-	char	*base;
-
-	base = "0123456789abcdef";
-	if (i >= 16)
-	{
-		ft_pointer(i / 16, result);
-		ft_pointer(i % 16, result);
-	}
-	else
-		ft_putchar(base[i], result);
+	sum = 0;
+	sum += ft_putstr("0x");
+	sum += ft_putnbr(nbr, base, is_upper);
+	return (sum);
 }
